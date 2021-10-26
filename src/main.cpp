@@ -8,7 +8,7 @@ using namespace std;
 
 void addmatrix();
 void appinfo();
-void option_tokenizer ();
+void option_tokenizer (string option);
 
 struct Matrix
 {
@@ -20,8 +20,8 @@ struct Matrix
 
 vector <Matrix> matrixes (0);
 
-vector<string> string_split (const string &option) {
-    char delimiter = ' ';
+vector<string> string_split (const string &option , char delimiter) {
+    //char delimiter = ' ';
     vector<string> result;
     stringstream stringinsstream (option);
     string item;
@@ -36,9 +36,14 @@ vector<string> string_split (const string &option) {
 
 int main()
 {   
-    appinfo();
-    option_tokenizer();
-    //addmatrix();
+    cout << "Welcome to the MATRIX APPLICATION!!" << endl;
+    string option;
+    while (option != "end_app")
+    {   
+        appinfo();
+        getline(cin , option);
+        option_tokenizer(option);
+    }
     /*cout << "size " << matrixes.size() << endl;
     cout << " cap " << matrixes.capacity() << endl;
     cout << matrixes[0].name << endl;
@@ -56,7 +61,7 @@ int main()
 }
 
 
-void addmatrix(string name, int satr , int sotun) //dar in tabe matris ezafe mishe
+void addmatrix(string name, int satr , int sotun , string initializes = "") //dar in tabe matris ezafe mishe
 {   
     Matrix newmat; //matrisi be nam newmat az struct matrix misazim
     //cout << "name : ";
@@ -71,14 +76,32 @@ void addmatrix(string name, int satr , int sotun) //dar in tabe matris ezafe mis
     {
         newmat.mat[i] = new string[sotun]; //edame new kardane hafeze baraye bode 2vom
     }
-    for (int i = 0; i < satr; i++)
+    if(initializes == "")
     {
-        for (int j = 0; j < sotun; j++)
-        {   
-            printf("enter number for place [%d][%d] : ", i+1 , j+1); 
-            cin >> newmat.mat[i][j]; //daryafte matris
+        for (int i = 0; i < satr; i++)
+        {
+            for (int j = 0; j < sotun; j++)
+            {   
+                printf("enter number for place [%d][%d] : ", i+1 , j+1); 
+                cin >> newmat.mat[i][j]; //daryafte matris
+            }
         }
-        
+    }
+    else
+    {   
+        initializes.erase(0,1);
+        initializes.pop_back();
+        vector <string> initializetokens = string_split(initializes , ',');
+        initializetokens.shrink_to_fit();
+        int k = 0;
+        for (int i = 0; i < satr; i++)
+        {
+            for (int j = 0; j < sotun; j++)
+            {   
+                newmat.mat[i][j] = stod(initializetokens[k]);
+                k++;
+            }
+        }
     }
     
     matrixes.push_back(newmat); //pushback kardane matris dar vector
@@ -351,7 +374,6 @@ void change()
 
 void appinfo()
 {
-    cout << "Welcome to the MATRIX APPLICATION!!" << endl;
     cout << "----------------------------------------------------------------------------------------------------------------------------" << endl;
     cout << "Templates to use in this application :" << endl;
     cout << "1 - Add matrix :" << endl;
@@ -384,15 +406,68 @@ void appinfo()
     cout << "----------------------------------------------------------------------------------------------------------------------------" << endl;
 }
 
-void option_tokenizer ()
+void option_tokenizer (string option)
 {
-    string option;
     cout << "enter your option" << endl;
-    getline(cin , option);
-    vector <string> optiontokens = string_split(option);
-    for (auto i : optiontokens)
+    vector <string> optiontokens = string_split(option , ' ');
+    optiontokens.shrink_to_fit();
+
+    //check kardane dastoorat
+
+    if (optiontokens[0] == "add")
     {
-      cout << i << endl;
+        if(optiontokens.size() == 2)
+        {   
+            cout << "Enter the Matrix Name : ";
+            string name;
+            cin >> name;
+            cout << "Enter the number of Lines : " ;
+            int satr;
+            cin >> satr;
+            cout << "Enter the number of Columns : ";
+            int sotun;
+            cin >> sotun;
+            addmatrix(name , satr , sotun);
+
+        }
+
+        if(optiontokens.size() == 3)
+        {   
+            cout << "Enter the number of Lines : " ;
+            int satr;
+            cin >> satr;
+            cout << "Enter the number of Columns : ";
+            int sotun;
+            cin >> sotun;
+            addmatrix(optiontokens[2] , satr , sotun);
+
+        }
+
+        if(optiontokens.size() == 4) //halati ke matris morabaE va initialize dar vorudi dade nmishavad
+        {
+            addmatrix(optiontokens[2] , stoi(optiontokens[3]) , stoi(optiontokens[3]));
+
+        }
+
+        if(optiontokens.size() == 5) //2 halat
+        {
+            if (stod(optiontokens[4])) //halati ke satr o sotun dade shode va initialize dade nmishavad
+            {
+                addmatrix(optiontokens[2] , stoi(optiontokens[3]) , stoi(optiontokens[4]));
+
+            }
+            else // halati ke matris morabaE va initialize dade mishavad
+            {
+                addmatrix(optiontokens[2] , stoi(optiontokens[3]) , stoi(optiontokens[3]) , optiontokens[4]);
+
+            }  
+        }
+
+        if(optiontokens.size() == 6) // halati ke satr o sotun dade shode va initialize niz dade mishavad
+        {
+            addmatrix(optiontokens[2] , stoi(optiontokens[3]) , stoi(optiontokens[4]) , optiontokens[5]);
+
+        }
     }
-     
 }
+
