@@ -43,7 +43,6 @@ int main()
     while (option != "end_app")
     {
         cout << "enter your command:" << endl;
-        //cin.ignore();
         getline(cin, option);
         cin.clear();
         if (option == "end_app")
@@ -127,11 +126,6 @@ void addmatrix(string name, int satr, int sotun, string initializes = "") //dar 
 
     matrixes.push_back(newmat); //pushback kardane matris dar vector
 
-    /*for(int i = 0; i < sotun; i++)
-    {
-        delete[] newmat.mat[i];
-    }
-    delete[] newmat.mat;*/
 }
 
 void MenuOptions()
@@ -389,8 +383,24 @@ void showmatrix(int &satr, int &sotun, string **const &mat, string &name)
     }
 }
 
-void deletematrix(string name)
+void deletematrix(string ** mat, int satr , int sotun ,string Name)
 {
+    for (size_t i = 0; i < satr; i++)
+    {
+            delete[] mat[i];
+    }
+    delete[] mat;
+    
+    for (size_t i = 0; i < matrixes.size() ; i++)
+    {
+        if(matrixes[i].name == Name)
+        {
+            matrixes.erase(matrixes.begin()+i);
+        }
+    }
+
+    cout << "Matrix deleted successfully" << endl;
+    
 }
 
 void change()
@@ -437,7 +447,7 @@ bool option_tokenizer(string option)
     optiontokens.shrink_to_fit(); //shrink baraye in ke badan az size tooye dastoorate zir estefade mishe
 
     //check kardane dastoorat
-    if ((optiontokens[0] == "add" && optiontokens[1] == "matrix") || (optiontokens[0] == "is_diagonal" || "is_upper_triangular" || "is_lower_triangular" || "is_triangular" || "is_identity" || "is_normal_symmetric" || "is_skew_symmetric" || "is_symmetric" || "inverse" || "show"))
+    if ((optiontokens[0] == "add" && optiontokens[1] == "matrix") || (optiontokens[0] == "is_diagonal" || "is_upper_triangular" || "is_lower_triangular" || "is_triangular" || "is_identity" || "is_normal_symmetric" || "is_skew_symmetric" || "is_symmetric" || "inverse" || "show" || "delete"))
     {
         if (optiontokens[0] == "add" && optiontokens[1] == "matrix")
         {
@@ -772,6 +782,20 @@ bool option_tokenizer(string option)
                 if (optiontokens[1] == i.name)
                 {
                     showmatrix(i.satr, i.sotun, i.mat, i.name);
+                    return true;
+                }
+            }
+            cout << "No such matrix name found." << endl;
+            return false;
+        }
+
+        if (optiontokens[0] == "delete")
+        {
+            for (auto i : matrixes)
+            {
+                if (optiontokens[1] == i.name)
+                {
+                    deletematrix(i.mat , i.satr , i.sotun , i.name);
                     return true;
                 }
             }
