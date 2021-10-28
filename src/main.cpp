@@ -8,7 +8,7 @@ using namespace std;
 
 void addmatrix();
 void appinfo();
-void option_tokenizer (string option);
+bool option_tokenizer(string option);
 
 struct Matrix
 {
@@ -18,31 +18,40 @@ struct Matrix
     int sotun;
 };
 
-vector <Matrix> matrixes (0);
+vector<Matrix> matrixes(0);
 
-vector<string> string_split (const string &option , char delimiter) {
-    //char delimiter = ' ';
+vector<string> string_split(const string &option, char delimiter)
+{
+
     vector<string> result;
-    stringstream stringinsstream (option);
+    stringstream stringinsstream(option);
     string item;
 
-    while (getline (stringinsstream, item, delimiter)) {
-        result.push_back (item);
+    while (getline(stringinsstream, item, delimiter))
+    {
+        result.push_back(item);
     }
 
     return result;
 }
 
-
 int main()
-{   
+{
     cout << "Welcome to the MATRIX APPLICATION!!" << endl;
     string option;
+    appinfo();
     while (option != "end_app")
-    {   
-        appinfo();
-        getline(cin , option);
+    {
+        cout << "enter your command:" << endl;
+        //cin.ignore();
+        getline(cin, option);
+        cin.clear();
+        if (option == "end_app")
+        {
+            break;
+        }
         option_tokenizer(option);
+        cin.ignore();
     }
     /*cout << "size " << matrixes.size() << endl;
     cout << " cap " << matrixes.capacity() << endl;
@@ -60,9 +69,20 @@ int main()
     return 0;
 }
 
+void addmatrix(string name, int satr, int sotun, string initializes = "") //dar in tabe matris ezafe mishe va default argument baraye mogheye initialize dar vorudi estefade mishe
+{
+    for (auto i : matrixes)
+    {
+        if (name == i.name)
+        {
+            while (name == i.name)
+            {
+                cout << "This name is already used for another matrix. Please enter another name : ";
+                cin >> name;
+            }
+        }
+    }
 
-void addmatrix(string name, int satr , int sotun , string initializes = "") //dar in tabe matris ezafe mishe
-{   
     Matrix newmat; //matrisi be nam newmat az struct matrix misazim
     //cout << "name : ";
     newmat.name = name;
@@ -70,42 +90,48 @@ void addmatrix(string name, int satr , int sotun , string initializes = "") //da
     newmat.satr = satr; //gharar dadane meghdare satr dar satre dakhele struct
     //cout << "sotun : ";
     //cin >> sotun;
-    newmat.sotun = sotun; //gharar dadane meghdare sotun dar sotune dakhele struct
-    newmat.mat = new string*[satr]; //new kardane hafeze baraye bode aval
-    for(int i = 0; i < satr; ++i)
+    newmat.sotun = sotun;            //gharar dadane meghdare sotun dar sotune dakhele struct
+    newmat.mat = new string *[satr]; //new kardane hafeze baraye bode aval
+    for (int i = 0; i < satr; i++)
     {
         newmat.mat[i] = new string[sotun]; //edame new kardane hafeze baraye bode 2vom
     }
-    if(initializes == "")
+
+    if (initializes == "") //halate default argument
     {
         for (int i = 0; i < satr; i++)
         {
             for (int j = 0; j < sotun; j++)
-            {   
-                printf("enter number for place [%d][%d] : ", i+1 , j+1); 
+            {
+                printf("enter number for place [%d][%d] : ", i + 1, j + 1);
                 cin >> newmat.mat[i][j]; //daryafte matris
             }
         }
     }
     else
-    {   
-        initializes.erase(0,1);
-        initializes.pop_back();
-        vector <string> initializetokens = string_split(initializes , ',');
+    {
+        initializes.erase(0, 1);                                          //hazfe khane aval
+        initializes.pop_back();                                           //hazfe khane akhar
+        vector<string> initializetokens = string_split(initializes, ','); //tokenize kardan ba ,
         initializetokens.shrink_to_fit();
         int k = 0;
         for (int i = 0; i < satr; i++)
         {
             for (int j = 0; j < sotun; j++)
-            {   
+            {
                 newmat.mat[i][j] = stod(initializetokens[k]);
                 k++;
             }
         }
     }
-    
+
     matrixes.push_back(newmat); //pushback kardane matris dar vector
-    
+
+    /*for(int i = 0; i < sotun; i++)
+    {
+        delete[] newmat.mat[i];
+    }
+    delete[] newmat.mat;*/
 }
 
 void MenuOptions()
@@ -131,107 +157,96 @@ void MenuOptions()
     }
 }
 
-bool is_diagonal( int len , string** mat) //tabe ghotri boodane matris
+bool is_diagonal(int len, string **mat) //tabe ghotri boodane matris
 {
     int zerocount = 0;
     for (size_t i = 0; i < len; i++)
     {
         for (size_t j = 0; j < len; j++)
         {
-            if((i > j) || (j > i))
+            if ((i > j) || (j > i))
             {
-                if(mat[i][j] == "0")
+                if (mat[i][j] == "0")
                 {
                     zerocount++;
                 }
             }
-            
         }
-        
     }
-    if(zerocount == ((len*len)-len)) //shomareshe tedad sefr haye gheyre ghotri ke bayad barabar ba len^2 - len bashad
+    if (zerocount == ((len * len) - len)) //shomareshe tedad sefr haye gheyre ghotri ke bayad barabar ba len^2 - len bashad
     {
         return true;
     }
     return false;
 }
 
-
-bool is_upper_triangular( int len , string** mat) //
+bool is_upper_triangular(int len, string **mat) //
 {
     int zerocount = 0;
     for (size_t i = 0; i < len; i++)
     {
         for (size_t j = 0; j < len; j++)
         {
-         if (i > j)
-         {
-            if(mat[i][j] == "0")
+            if (i > j)
             {
-                zerocount++;
+                if (mat[i][j] == "0")
+                {
+                    zerocount++;
+                }
             }
-
-         }   
-
         }
-        
     }
-    if (zerocount == (((len*len)-len)/2))
+    if (zerocount == (((len * len) - len) / 2))
     {
         return true;
     }
     return false;
-
 }
 
-bool is_lower_triangular(int len , string** mat) 
+bool is_lower_triangular(int len, string **mat)
 {
     int zerocount = 0;
     for (size_t i = 0; i < len; i++)
     {
         for (size_t j = 0; j < len; j++)
         {
-         if (j > i)
-         {
-            if(mat[i][j] == "0")
+            if (j > i)
             {
-                zerocount++;
+                if (mat[i][j] == "0")
+                {
+                    zerocount++;
+                }
             }
-
-         }   
-
         }
-        
     }
-    if (zerocount == (((len*len)-len)/2))
+    if (zerocount == (((len * len) - len) / 2))
     {
         return true;
     }
     return false;
-
 }
 
-bool is_triangular(int len , string** mat) 
+bool is_triangular(int len, string **mat)
 {
-    bool lower = is_lower_triangular(len ,mat); 
-    bool upper = is_upper_triangular(len ,mat);
-    if(lower == true && upper == true)
+    bool lower = is_lower_triangular(len, mat);
+    bool upper = is_upper_triangular(len, mat);
+    if (lower == true && upper == true)
     {
-        cout << "is both upper and lower triangular" << endl;
+        cout << "The matrix is both upper and lower triangular." << endl;
         return true;
     }
-    if(lower)
+    if (lower)
     {
-        cout << "is lower triangular" << endl;
+        cout << "The matrix is only lower triangular." << endl;
     }
-    if(upper)
+    if (upper)
     {
-        cout << "is upper triangular" << endl;
+        cout << "The matrix is only upper triangular." << endl;
     }
     return false;
 }
 
-bool is_identity(int len , string** mat)
+bool is_identity(int len, string **mat)
 {
     int zerocount = 0;
     int diagonalOnes = 0;
@@ -239,9 +254,9 @@ bool is_identity(int len , string** mat)
     {
         for (size_t j = 0; j < len; j++)
         {
-            if((i > j) || (j > i))
+            if ((i > j) || (j > i))
             {
-                if(mat[i][j] == "0")
+                if (mat[i][j] == "0")
                 {
                     zerocount++;
                 }
@@ -250,25 +265,23 @@ bool is_identity(int len , string** mat)
             {
                 diagonalOnes++;
             }
-            
         }
-        
     }
-    if(zerocount == ((len*len)-len) && (diagonalOnes == len))
+    if (zerocount == ((len * len) - len) && (diagonalOnes == len))
     {
         return true;
     }
     return false;
 }
 
-bool is_normal_symmetric(int len , string** mat) //dobar mishmore
+bool is_normal_symmetric(int len, string **mat) //dobar mishmore
 {
     int counter = 0;
     for (size_t i = 0; i < len; i++)
     {
         for (size_t j = 0; j < len; j++)
         {
-            if(i == j)
+            if (i == j)
             {
                 continue;
             }
@@ -277,23 +290,22 @@ bool is_normal_symmetric(int len , string** mat) //dobar mishmore
                 counter++;
             }
         }
-        
     }
-    if (counter == ((len*len) - len))
+    if (counter == ((len * len) - len))
     {
         return true;
     }
     return false;
 }
 
-bool is_skew_symmetric(int len , string** mat)
+bool is_skew_symmetric(int len, string **mat)
 {
     int counter = 0;
     for (size_t i = 0; i < len; i++)
     {
         for (size_t j = 0; j < len; j++)
         {
-            if(i == j)
+            if (i == j)
             {
                 continue;
             }
@@ -302,56 +314,71 @@ bool is_skew_symmetric(int len , string** mat)
                 counter++;
             }
         }
-        
     }
-    if (counter == ((len*len) - len))
+    if (counter == ((len * len) - len))
     {
         return true;
     }
     return false;
 }
 
-bool is_symmetric(int len , string** mat)
+bool is_symmetric(int len, string **mat)
 {
     bool normal = is_normal_symmetric(len, mat);
     bool skew = is_skew_symmetric(len, mat);
 
-    if(skew)
+    if (skew)
     {
-        cout << "is skew symmetric" << endl;
+        cout << "The matrix is skew symmetric." << endl;
         return true;
     }
 
-    if(normal)
+    if (normal)
     {
-        cout << "is normal symmetric" << endl;
+        cout << "The matrix is normal symmetric." << endl;
         return true;
     }
 
-    cout << "is not skew or normal symmetric" << endl;
+    cout << "The matrix is not skew nor normal symmetric." << endl;
     return false;
 }
 
-void inverse(int len , string** mat)
+void inverse(int len, string **mat, string newmatrixname = "")
 {
-    for (size_t i = 0; i < len; i++)
+    if (newmatrixname == "") //baraye halati ke mikhaim khode matris inverse she
     {
-        for (size_t j = 0; j < len; j++)
+        for (size_t i = 0; i < len; i++)
         {
-            if (i < j)
+            for (size_t j = 0; j < len; j++)
             {
-                string temp = mat[j][i];
-                mat[j][i] = mat[i][j];
-                mat[i][j] = temp;
+                if (i < j)
+                {
+                    string temp = mat[j][i];
+                    mat[j][i] = mat[i][j];
+                    mat[i][j] = temp;
+                }
             }
         }
-        
+    }
+    else //ye string barax dar nazar migirim be forme [3,2,1] ke befrestim be newmatrix ta matris jadid sakhte beshe
+    {
+        string sendtonewmat = "[";
+        for (size_t i = (len - 1); i >= 0; i--)
+        {
+            for (size_t j = (len - 1); j >= 0; j--)
+            {
+                sendtonewmat.append(mat[i][j]);
+                sendtonewmat.append(",");
+            }
+        }
+        sendtonewmat.append("]");
+        addmatrix(newmatrixname, len, len, sendtonewmat);
     }
 }
 
-void showmatrix(int satr , int sotun , string** const mat)
+void showmatrix(int &satr, int &sotun, string **const &mat, string &name)
 {
-    cout << "name : " << endl;
+    cout << "Matrix name : " << name << endl;
     for (size_t i = 0; i < satr; i++)
     {
         for (size_t j = 0; j < sotun; j++)
@@ -364,12 +391,10 @@ void showmatrix(int satr , int sotun , string** const mat)
 
 void deletematrix(string name)
 {
-
 }
 
 void change()
 {
-
 }
 
 void appinfo()
@@ -406,68 +431,355 @@ void appinfo()
     cout << "----------------------------------------------------------------------------------------------------------------------------" << endl;
 }
 
-void option_tokenizer (string option)
+bool option_tokenizer(string option)
 {
-    cout << "enter your option" << endl;
-    vector <string> optiontokens = string_split(option , ' ');
-    optiontokens.shrink_to_fit();
+    vector<string> optiontokens = string_split(option, ' ');
+    optiontokens.shrink_to_fit(); //shrink baraye in ke badan az size tooye dastoorate zir estefade mishe
 
     //check kardane dastoorat
-
-    if (optiontokens[0] == "add")
+    if ((optiontokens[0] == "add" && optiontokens[1] == "matrix") || (optiontokens[0] == "is_diagonal" || "is_upper_triangular" || "is_lower_triangular" || "is_triangular" || "is_identity" || "is_normal_symmetric" || "is_skew_symmetric" || "is_symmetric" || "inverse" || "show"))
     {
-        if(optiontokens.size() == 2)
-        {   
-            cout << "Enter the Matrix Name : ";
-            string name;
-            cin >> name;
-            cout << "Enter the number of Lines : " ;
-            int satr;
-            cin >> satr;
-            cout << "Enter the number of Columns : ";
-            int sotun;
-            cin >> sotun;
-            addmatrix(name , satr , sotun);
-
-        }
-
-        if(optiontokens.size() == 3)
-        {   
-            cout << "Enter the number of Lines : " ;
-            int satr;
-            cin >> satr;
-            cout << "Enter the number of Columns : ";
-            int sotun;
-            cin >> sotun;
-            addmatrix(optiontokens[2] , satr , sotun);
-
-        }
-
-        if(optiontokens.size() == 4) //halati ke matris morabaE va initialize dar vorudi dade nmishavad
+        if (optiontokens[0] == "add" && optiontokens[1] == "matrix")
         {
-            addmatrix(optiontokens[2] , stoi(optiontokens[3]) , stoi(optiontokens[3]));
-
-        }
-
-        if(optiontokens.size() == 5) //2 halat
-        {
-            if (stod(optiontokens[4])) //halati ke satr o sotun dade shode va initialize dade nmishavad
+            if (optiontokens.size() == 2)
             {
-                addmatrix(optiontokens[2] , stoi(optiontokens[3]) , stoi(optiontokens[4]));
+                cout << "Enter the Matrix Name : ";
+                string name;
+                cin >> name;
+                cout << "Enter the number of Lines : ";
+                int satr;
+                cin >> satr;
+                cout << "Enter the number of Columns : ";
+                int sotun;
+                cin >> sotun;
+                addmatrix(name, satr, sotun);
 
+                return true;
             }
-            else // halati ke matris morabaE va initialize dade mishavad
-            {
-                addmatrix(optiontokens[2] , stoi(optiontokens[3]) , stoi(optiontokens[3]) , optiontokens[4]);
 
-            }  
+            if (optiontokens.size() == 3)
+            {
+                cout << "Enter the number of Lines : ";
+                int satr;
+                cin >> satr;
+                cout << "Enter the number of Columns : ";
+                int sotun;
+                cin >> sotun;
+                addmatrix(optiontokens[2], satr, sotun);
+
+                return true;
+            }
+
+            if (optiontokens.size() == 4) //halati ke matris morabaE va initialize dar vorudi dade nmishavad
+            {
+                addmatrix(optiontokens[2], stoi(optiontokens[3]), stoi(optiontokens[3]));
+
+                return true;
+            }
+
+            if (optiontokens.size() == 5) //2 halat
+            {
+                string temp = optiontokens[4];
+                char x = temp.at(0);
+                if (isdigit(x)) //halati ke satr o sotun dade shode va initialize dade nmishavad
+                {
+                    addmatrix(optiontokens[2], stoi(optiontokens[3]), stoi(optiontokens[4]));
+
+                    return true;
+                }
+                else // halati ke matris morabaE va initialize dade mishavad
+                {
+                    addmatrix(optiontokens[2], stoi(optiontokens[3]), stoi(optiontokens[3]), optiontokens[4]);
+
+                    return true;
+                }
+            }
+
+            if (optiontokens.size() == 6) // halati ke satr o sotun dade shode va initialize niz dade mishavad
+            {
+                addmatrix(optiontokens[2], stoi(optiontokens[3]), stoi(optiontokens[4]), optiontokens[5]);
+
+                return true;
+            }
         }
 
-        if(optiontokens.size() == 6) // halati ke satr o sotun dade shode va initialize niz dade mishavad
+        if (optiontokens[0] == "is_diagonal")
         {
-            addmatrix(optiontokens[2] , stoi(optiontokens[3]) , stoi(optiontokens[4]) , optiontokens[5]);
+            for (auto i : matrixes)
+            {
+                if (optiontokens[1] == i.name)
+                {
+                    if (i.satr == i.sotun)
+                    {
+                        if (is_diagonal(i.satr, i.mat))
+                        {
+                            cout << "The matrix is diagonal." << endl;
+                            return true;
+                        }
+                        else
+                        {
+                            cout << "The matrix isn't diagonal." << endl;
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        cout << "The matrix isn't a square matrix, so it can't be checked for being diagonal." << endl;
+                        return false;
+                    }
+                }
+                cout << "No such matrix name found." << endl;
+                return false;
+            }
+        }
 
+        if (optiontokens[0] == "is_upper_triangular")
+        {
+            for (auto i : matrixes)
+            {
+                if (optiontokens[1] == i.name)
+                {
+                    if (i.satr == i.sotun)
+                    {
+                        if (is_upper_triangular(i.satr, i.mat))
+                        {
+                            cout << "The matrix is upper triangular." << endl;
+                            return true;
+                        }
+                        else
+                        {
+                            cout << "The matrix isn't upper triangular." << endl;
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        cout << "The matrix isn't a square matrix, so it can't be checked for being upper triangular." << endl;
+                        return false;
+                    }
+                }
+                cout << "No such matrix name found." << endl;
+                return false;
+            }
+        }
+
+        if (optiontokens[0] == "is_lower_triangular")
+        {
+            for (auto i : matrixes)
+            {
+                if (optiontokens[1] == i.name)
+                {
+                    if (i.satr == i.sotun)
+                    {
+                        if (is_lower_triangular(i.satr, i.mat))
+                        {
+                            cout << "The matrix is lower triangular." << endl;
+                            return true;
+                        }
+                        else
+                        {
+                            cout << "The matrix isn't lower triangular." << endl;
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        cout << "The matrix isn't a square matrix, so it can't be checked for being lower triangular." << endl;
+                        return false;
+                    }
+                }
+                cout << "No such matrix name found." << endl;
+                return false;
+            }
+        }
+
+        if (optiontokens[0] == "is_triangular")
+        {
+            for (auto i : matrixes)
+            {
+                if (optiontokens[1] == i.name)
+                {
+                    if (i.satr == i.sotun)
+                    {
+                        is_triangular(i.satr, i.mat);
+                        return true;
+                    }
+                    else
+                    {
+                        cout << "The matrix isn't a square matrix, so it can't be checked for being triangular." << endl;
+                        return false;
+                    }
+                }
+                cout << "No such matrix name found." << endl;
+                return false;
+            }
+        }
+
+        if (optiontokens[0] == "is_identity")
+        {
+            for (auto i : matrixes)
+            {
+                if (optiontokens[1] == i.name)
+                {
+                    if (i.satr == i.sotun)
+                    {
+                        if (is_identity(i.satr, i.mat))
+                        {
+                            cout << "The matrix is identity." << endl;
+                            return true;
+                        }
+                        else
+                        {
+                            cout << "The matrix isn't identity." << endl;
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        cout << "The matrix isn't a square matrix, so it can't be checked for being identity." << endl;
+                        return false;
+                    }
+                }
+                cout << "No such matrix name found." << endl;
+                return false;
+            }
+        }
+
+        if (optiontokens[0] == "is_normal_symmetric")
+        {
+            for (auto i : matrixes)
+            {
+                if (optiontokens[1] == i.name)
+                {
+                    if (i.satr == i.sotun)
+                    {
+                        if (is_normal_symmetric(i.satr, i.mat))
+                        {
+                            cout << "The matrix is normal symmetric." << endl;
+                            return true;
+                        }
+                        else
+                        {
+                            cout << "The matrix isn't normal symmetric." << endl;
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        cout << "The matrix isn't a square matrix, so it can't be checked for being normal symmetric." << endl;
+                        return false;
+                    }
+                }
+                cout << "No such matrix name found." << endl;
+                return false;
+            }
+        }
+
+        if (optiontokens[0] == "is_skew_symmetric")
+        {
+            for (auto i : matrixes)
+            {
+                if (optiontokens[1] == i.name)
+                {
+                    if (i.satr == i.sotun)
+                    {
+                        if (is_skew_symmetric(i.satr, i.mat))
+                        {
+                            cout << "The matrix is skew symmetric." << endl;
+                            return true;
+                        }
+                        else
+                        {
+                            cout << "The matrix isn't skew symmetric." << endl;
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        cout << "The matrix isn't a square matrix, so it can't be checked for being skew symmetric." << endl;
+                        return false;
+                    }
+                }
+                cout << "No such matrix name found." << endl;
+                return false;
+            }
+        }
+
+        if (optiontokens[0] == "is_symmetric")
+        {
+            for (auto i : matrixes)
+            {
+                if (optiontokens[1] == i.name)
+                {
+                    if (i.satr == i.sotun)
+                    {
+                        is_symmetric(i.satr, i.mat);
+                        return true;
+                    }
+                    else
+                    {
+                        cout << "The matrix isn't a square matrix, so it can't be checked for being symmetric." << endl;
+                        return false;
+                    }
+                }
+                cout << "No such matrix name found." << endl;
+                return false;
+            }
+        }
+
+        if (optiontokens[0] == "inverse")
+        {
+            for (auto i : matrixes)
+            {
+                if (optiontokens[1] == i.name)
+                {
+                    if (optiontokens.size() == 2)
+                    {
+                        if (i.satr == i.sotun)
+                        {
+                            inverse(i.satr, i.mat);
+                            return true;
+                        }
+                        else
+                        {
+                            cout << "The matrix isn't a square matrix, so it can't be inversed." << endl;
+                            return false;
+                        }
+                    }
+                    if (optiontokens.size() == 3)
+                    {
+                        if (i.satr == i.sotun)
+                        {
+                            inverse(i.satr, i.mat, optiontokens[2]);
+                            return true;
+                        }
+                        else
+                        {
+                            cout << "The matrix isn't a square matrix, so it can't be inversed." << endl;
+                            return false;
+                        }
+                    }
+                }
+                cout << "No such matrix name found." << endl;
+                return false;
+            }
+        }
+
+        if (optiontokens[0] == "show")
+        {
+            for (auto i : matrixes)
+            {
+                if (optiontokens[1] == i.name)
+                {
+                    showmatrix(i.satr, i.sotun, i.mat, i.name);
+                    return true;
+                }
+            }
+            cout << "No such matrix name found." << endl;
+            return false;
         }
     }
-}
 
+    cout << "No such command found." << endl;
+    return false;
+}
