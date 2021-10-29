@@ -64,6 +64,7 @@ void addmatrix(string &name, const int satr, const int sotun, string initializes
             {
                 cout << "This name is already used for another matrix. Please enter another name : ";
                 cin >> name;
+                cin.ignore();
                 if (namecheckerForAddMatrix) //agar esme dade shode dar tabe namecheckerForAddMatrix peyda nashe, true mishe
                 {
                     break;
@@ -422,8 +423,8 @@ void appinfo() //tabe informatione dastoorat
     cout << "----------------------------------------------------------------------------------------------------------------------------" << endl;
     cout << "Templates of commands that could be used in this application :" << endl;
     cout << "1 - Add matrix :" << endl;
-    cout << "    add matrix Name Line Column                                       For example : add matrix first_mat 4 7" << endl;
-    cout << "    add matrix Name Line Column (initialize numbers)[1,2,...]         For example : add matrix secondmat 2 3 [1,2,3,4,5,22]" << endl;
+    cout << "    add matrix Name Row Column                                        For example : add matrix first_mat 4 7" << endl;
+    cout << "    add matrix Name Row Column (initialize numbers)[1,2,...]          For example : add matrix secondmat 2 3 [1,2,3,4,5,22]" << endl;
     cout << "    add matrix Name SquareMatrixNumber                                For example : add matrix third_mat 5" << endl;
     cout << "    add matrix Name SquareMatrixNumber (initialize numbers)[1,2,...]  For example : add matrix fourthmat 2 [4,6,7,1085]" << endl;
     cout << "2 - Diagonal check :" << endl;
@@ -446,7 +447,7 @@ void appinfo() //tabe informatione dastoorat
     cout << "8 - Delete matrix :" << endl;
     cout << "    delete Name                                                       For example : delete first_mat" << endl;
     cout << "9 - Change a value in matrix :" << endl;
-    cout << "    change Line Column NewValue                                       For example : change first_mat 2 1 132" << endl;
+    cout << "    change Name Row Column NewValue                                   For example : change first_mat 2 1 132" << endl;
     cout << "0 - Enter the phrase \"end_app\" to end the program." << endl;
 }
 
@@ -466,7 +467,7 @@ bool option_tokenizer(const string option) //tabeE token kardan va tashkhise noe
                 cout << "Enter the Matrix Name : ";
                 string name;
                 cin >> name;
-                cout << "Enter the number of Lines : ";
+                cout << "Enter the number of Rows : ";
                 int satr;
                 cin >> satr;
                 cout << "Enter the number of Columns : ";
@@ -479,7 +480,7 @@ bool option_tokenizer(const string option) //tabeE token kardan va tashkhise noe
 
             if (optiontokens.size() == 3) //halati ke tedade satr o sotun dade nmishavad
             {
-                cout << "Enter the number of Lines : ";
+                cout << "Enter the number of Rows : ";
                 int satr;
                 cin >> satr;
                 cout << "Enter the number of Columns : ";
@@ -912,10 +913,164 @@ bool option_tokenizer(const string option) //tabeE token kardan va tashkhise noe
 
         if (optiontokens[0] == "change") //farakhani tabe marboot be taghire yek khane az matris
         {
+            if(optiontokens.size() == 1) //halati ke faghat dastoore change dade beshe
+            {
+                cout << "Enter the matrix name :";
+                string name;
+                cin >> name;
+                for(auto i : matrixes)
+                {
+                    if(name == i.name) //dar in if etelaat daryaft mikonim
+                    {
+                        cout << "Enter the row :";
+                        int row;
+                        cin >> row;
+                        while(row > i.satr)
+                        {
+                            cout << "Invalid row number, please enter a valid one :";
+                            cin >> row;
+                        }
+                        int column;
+                        cout << "Enter the column :";
+                        cin >> column;
+                        while(column > i.sotun)
+                        {
+                            cout << "Invalid column number, please enter a valid one :";
+                            cin >> column;
+                        }
+                        cout << "Enter the new value :";
+                        string newvalue;
+                        cin >> newvalue;
+                        change(i.mat , row ,column , newvalue);
+                        cin.ignore();
+                        return true;
+                    }
+                    
+                }
+                cout << "No such matrix name found." << endl; //peyda nashodane esme matris
+                cin.ignore();
+                return false;
+
+            }
+            if(optiontokens.size() == 2) //halati ke change va esm dade beshe
+            {
+                for(auto i : matrixes)
+                {
+                    if(optiontokens[1] == i.name) //dar in if etelaat daryaft mikonim
+                    {
+                        cout << "Enter the row :";
+                        int row;
+                        cin >> row;
+                        while(row > i.satr)
+                        {
+                            cout << "Invalid row number, please enter a valid one :";
+                            cin >> row;
+                        }
+                        int column;
+                        cout << "Enter the column :";
+                        cin >> column;
+                        while(column > i.sotun)
+                        {
+                            cout << "Invalid column number, please enter a valid one :";
+                            cin >> column;
+                        }
+                        cout << "Enter the new value :";
+                        string newvalue;
+                        cin >> newvalue;
+                        change(i.mat , row ,column , newvalue);
+                        cin.ignore();
+                        return true;
+                    }
+                }
+                cout << "No such matrix name found." << endl; //peyda nashodane esme matris
+                return false;
+            }
+            if(optiontokens.size() == 3) //halati ke change o esm o satr dade beshe
+            {
+                for(auto i : matrixes)
+                {
+                    if(optiontokens[1] == i.name) //dar in if etelaat daryaft mikonim
+                    {
+                        int row = stoi(optiontokens[2]);
+                        while(row > i.satr)
+                        {
+                            cout << "Invalid row number, please enter a valid one :";
+                            cin >> row;
+                        }
+                        int column;
+                        cout << "Enter the column :";
+                        cin >> column;
+                        while(column > i.sotun)
+                        {
+                            cout << "Invalid column number, please enter a valid one :";
+                            cin >> column;
+                        }
+                        cout << "Enter the new value :";
+                        string newvalue;
+                        cin >> newvalue;
+                        change(i.mat , row ,column , newvalue);
+                        cin.ignore();
+                        return true;
+                    }
+                }
+                cout << "No such matrix name found." << endl; //peyda nashodane esme matris
+                return false;   
+            }
+
+            if(optiontokens.size() == 4) //halati ke change o esm o satr o sotun dade beshe
+            {
+                for(auto i : matrixes)
+                {
+                    if(optiontokens[1] == i.name) //dar in if etelaat daryaft mikonim
+                    {
+                        int row = stoi(optiontokens[2]);
+                        while(row > i.satr)
+                        {
+                            cout << "Invalid row number, please enter a valid one :";
+                            cin >> row;
+                        }
+                        int column = stoi(optiontokens[3]);
+                        while(column > i.sotun)
+                        {
+                            cout << "Invalid column number, please enter a valid one :";
+                            cin >> column;
+                        }
+                        cout << "Enter the new value :";
+                        string newvalue;
+                        cin >> newvalue;
+                        change(i.mat , row ,column , newvalue);
+                        cin.ignore();
+                        return true;
+                    }
+                }
+                cout << "No such matrix name found." << endl; //peyda nashodane esme matris
+                return false;   
+            }
+
+            //halati ke hame chi dade beshe az inja be bade
             for (auto i : matrixes) //check kardane name vorudi ba name haye mojud dar vector struct ha
             {
                 if (optiontokens[1] == i.name) //sharte vojude name
-                {
+                {   
+                    if(stoi(optiontokens[2]) > (i.satr)) //range checke satre vorudi
+                    {
+                        while (stoi(optiontokens[2]) > i.satr)
+                        {
+                        cout << "Invalid Row number, please enter a valid one:";
+                        cin >> optiontokens[2];
+                        }
+                        cin.ignore();
+                    }
+                    if(stoi(optiontokens[3]) > (i.sotun)) //range check sotune vorudi
+                    {
+                        while (stoi(optiontokens[3]) > i.sotun)
+                        {
+                        cout << "Invalid Column number, please enter a valid one:";
+                        cin >> optiontokens[3];
+                        }
+                        cin.ignore();
+                    }
+
                     change(i.mat, stoi(optiontokens[2]), stoi(optiontokens[3]), optiontokens[4]); //farakhani tabe (estefade az stoi baraye tabdile string be int)
                     cout << "Successfully changed." << endl;
                     return true;
