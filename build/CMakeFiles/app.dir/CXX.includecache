@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/mnt/d/cpp/tamrin1/src/main.cpp
+/mnt/d/cpp/tamrin1/src/Functions.cpp
 iostream
 -
 vector

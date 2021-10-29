@@ -4,6 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
+  "/mnt/d/cpp/tamrin1/src/Functions.cpp" "/mnt/d/cpp/tamrin1/build/CMakeFiles/app.dir/src/Functions.cpp.o"
   "/mnt/d/cpp/tamrin1/src/main.cpp" "/mnt/d/cpp/tamrin1/build/CMakeFiles/app.dir/src/main.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
