@@ -13,6 +13,7 @@ void deletematrix(string **mat, int satr, int sotun, string Name);
 
 struct Matrix
 {
+    //vectori az in struct negah midarim, in struct shamele esm,satr,sotun, va string** mishe
     string name;
     string **mat; //string mitoone shamele string, int, double va char mishe age ehtiaj be conversion bashe stod estefade mishe (convert be double ke double am shamele int e)
     int satr;
