@@ -8,7 +8,7 @@ using namespace std;
 
 void addmatrix();
 void appinfo();
-bool option_tokenizer(string option);
+bool option_tokenizer(const string option);
 void deletematrix(string **mat, int satr, int sotun, string Name);
 
 struct Matrix
@@ -47,16 +47,11 @@ int main()
     {
         cout << "enter your command:" << endl;
         getline(cin, option); //cin baraye in ke be space hasas nabashe
-        cin.clear();
-        if (option == "end_app") //agar "end_app" bood kharej she va bere edame code baraye delete kardan new ha
+        if (option == "end_app") //agar "end_app" bood kharej she, OS ha khodeshoon bad az etmame barname dynamic memory ro delete mikonan, ehtiaji be delete kardan nist
         {
             break;
         }
         option_tokenizer(option); //farakhani tabe asli barname yani option_tokenizer baraye token kardane option va ejraye commande dade shode ba tabe e makhsoos
-    }
-    for (auto i : matrixes)
-    {
-        deletematrix(i.mat, i.satr, i.sotun, i.name); //delete kardan bad az vorudew "end_app" dar option
     }
 
     return 0;
@@ -116,6 +111,7 @@ void addmatrix(string &name, const int satr, const int sotun, string initializes
                 cin >> newmat.mat[i][j]; //daryafte matris
             }
         }
+        cin.ignore();               //rafe moshkele gereftane vorudi be khatere vojude newline dar cin >>
     }
     else //baraye halati ke command dade shode daraye [x,y,z,...] bashad
     {
@@ -133,8 +129,8 @@ void addmatrix(string &name, const int satr, const int sotun, string initializes
             }
         }
     }
-    cin.ignore();               //rafe moshkele gereftane vorudi be khatere vojude newline dar cin >>
     matrixes.push_back(newmat); //pushback kardane matris dar vector
+    matrixes.shrink_to_fit();
 }
 
 bool is_number(const string &str) //check kardan baraye adad boodan
@@ -433,8 +429,6 @@ void deletematrix(string **mat, int satr, int sotun, string Name) //tabe hazfe m
             matrixes.erase(matrixes.begin() + i); //hazfe structe marboot be matris
         }
     }
-
-    cout << "Matrix deleted successfully." << endl;
 }
 
 void change(string **mat, const int &satr, const int &sotun, const string &newvalue) //tabe avaz kardane yek khane az yek matris
@@ -544,7 +538,6 @@ bool option_tokenizer(const string option) //tabeE token kardan va tashkhise noe
             if (optiontokens.size() == 6) // halati ke satr o sotun dade shode va initialize niz dade mishavad
             {
                 addmatrix(optiontokens[2], stoi(optiontokens[3]), stoi(optiontokens[4]), optiontokens[5]); //estefade az stoi chon avalesh be halate stringe o bayad be int tabdil she
-
                 return true;
             }
         }
@@ -929,6 +922,7 @@ bool option_tokenizer(const string option) //tabeE token kardan va tashkhise noe
                 if (optiontokens[1] == i.name) //sharte vojude name
                 {
                     deletematrix(i.mat, i.satr, i.sotun, i.name); //farakhani tabe
+                    cout << "Matrix deleted successfully." << endl;
                     return true;
                 }
             }
